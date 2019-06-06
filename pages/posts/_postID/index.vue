@@ -16,14 +16,17 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data(){
-        return{
-            fetchedData: ''
-        }
     },
-    created(){
-        //this.fetchedData = this.$store.getters('getSinglePost', this.$route.params.)
+    asyncData(context){
+        return axios.get('https://kose-yazilar-nuxt.firebaseio.com/posts/' + context.params.postID + '.json')
+        .then(res => {
+            return {
+                fetchedData: res.data
+            }
+        })
     }
 }
 </script>

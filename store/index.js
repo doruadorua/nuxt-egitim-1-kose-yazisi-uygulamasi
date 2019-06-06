@@ -1,4 +1,5 @@
 import Vuex from 'vuex'
+import axios from 'axios';
 
 const createStore = () => {
     return new Vuex.Store({
@@ -8,28 +9,45 @@ const createStore = () => {
         getters:{
             getPosts(state){
                 return state.fetchedPosts
-            },
-            getSinglePost(state, id){
-                for(p in state.fetchedPosts){
-                    if(p.id == id){
-                        return state.fetchedPosts[p]
-                    }
-                }
             }
         },
         mutations:{
             setPosts(state, posts){
                 state.fetchedPosts = posts
+            },
+            addPost(state, post){
+                state.fetchedPosts.push(post)
+            },
+            updatePost(state, post){
+                let postIndex = state.fetchedPosts.findIndex(item => item.id == post.id)
+                if (postIndex){
+                    state.fetchedPosts[postIndex] = post
+                }
             }
         },
         actions:{
             nuxtServerInit(vuexContext, context){
-                vuexContext.commit('setPosts', 
-                    [
-                        {id: 1, title: 'baslik #1', subtitle: 'subtitle #1', text: 'text #1', author: 'doruadorua'}, 
-                        {id: 2, title: 'baslik #2', subtitle: 'subtitle #2', text: 'text #2', author: 'doruadorua'},
-                        {id: 3, title: 'falan', subtitle: 'filan', text: 'inter milan', author: 'doruadorua'}
-                    ])
+                return axios.get('https://kose-yazilar-nuxt.firebaseio.com/posts.json')
+                .then(res => {
+                    let data = res.data
+                    let postArray = []
+                    for(let key in data){
+                        postArray.push({ ...data[key], id: key })
+                    }
+                    vuexContext.commit('setPosts', postArray)
+                })
+            },
+            addPost(vuexContext, post){
+                return axios.post('https://kose-yazilar-nuxt.firebaseio.com/posts.json', post)
+                .then(res => {
+                    vuexContext.commit('addPost', {...post, id: res.data.name})
+                })
+            },
+            updatePost(vuexContext, post){
+                return axios.put('https://kose-yazilar-nuxt.firebaseio.com/posts/' + post.id + '.json', post)
+                .then(res => {
+                    vuexContext.commit('updatePost', post)
+                })
             }
         }
     })

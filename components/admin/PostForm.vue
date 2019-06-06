@@ -41,10 +41,19 @@ export default {
     },
     methods:{
         savePost(){
-            this.$emit('post', this.post)
+            this.$emit('postsend', this.post)
         }
     },
-    props: ['is-updated']
+    props: ['is-updated', 'loadedpost'],
+    created(){
+        console.log(this.loadedpost)
+        if(this.loadedpost){
+            this.post.author = this.loadedpost.author 
+            this.post.title = this.loadedpost.title 
+            this.post.subtitle = this.loadedpost.subtitle 
+            this.post.text = this.loadedpost.text
+        }
+    }
 }
 </script>
 

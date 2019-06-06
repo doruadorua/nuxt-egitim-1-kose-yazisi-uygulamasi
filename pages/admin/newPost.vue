@@ -1,8 +1,9 @@
 <template>
-    <PostForm @post="savePost($event)"/>
+    <PostForm @postsend="savePost($event)"/>
 </template>
 
 <script>
+import axios from 'axios'
 import PostForm from '@/components/admin/PostForm'
 export default {
     components: {
@@ -10,7 +11,10 @@ export default {
     },
     methods:{
         savePost(val){
-            console.log(val)
+            this.$store.dispatch('addPost', val)
+            .then(res => {
+                this.$router.push('/admin')
+            })
         }
     }
 }

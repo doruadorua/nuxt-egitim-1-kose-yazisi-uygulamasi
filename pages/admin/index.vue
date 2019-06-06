@@ -3,7 +3,7 @@
     <div class="container d-flex justify-content-center align-items-center">
         <button @click="$router.push('/admin/newPost')" class="btn btn-dark">Yeni Bir Yazı Ekle</button>
     </div>
-    <PostList :is-admin="true" />
+    <PostList :posts="fetchedPosts" :is-admin="true" />
 </div>
 </template>
 
@@ -13,6 +13,11 @@ export default {
     layout: 'admin',
     components: {
         PostList
+    },
+    computed:{
+        fetchedPosts(){
+            return this.$store.getters.getPosts
+        }
     }
 }
 </script>
